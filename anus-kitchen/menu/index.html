@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="Anu's Kitchen AR menu — see every dish in augmented reality before you order.">
+  <meta name="theme-color" content="#1C0A00">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta property="og:site_name" content="Forebytes AR">
+  <meta property="og:title" content="Anu's Kitchen — AR Menu">
+  <meta property="og:description" content="Tap any dish to see it at real scale on your table.">
+  <meta property="og:type" content="website">
+  <title>Anu's Kitchen — Menu</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="menu.css">
+</head>
+<body>
+
+  <header>
+    <div class="logo">
+      <span class="logo-name">Anu's Kitchen</span>
+      <span class="logo-sub">Authentic Nigerian Cuisine</span>
+    </div>
+    <div class="forebytes-badge" aria-label="Powered by Forebytes AR">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M12 2L3 7v10l9 5 9-5V7L12 2z" stroke="#0EA5E9" stroke-width="1.8" stroke-linejoin="round"/>
+        <path d="M12 2v15M3 7l9 5 9-5" stroke="#0EA5E9" stroke-width="1.8" stroke-linejoin="round"/>
+      </svg>
+      <span>AR Menu</span>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-eyebrow">Dublin's Finest Nigerian Kitchen</div>
+    <h1>Taste it before<br>you <em>order it</em></h1>
+    <p>Tap <strong>Visualise in AR</strong> on any dish to see it at real scale — right on your table.</p>
+  </section>
+
+  <div class="divider" aria-hidden="true">
+    <div class="divider-line"></div>
+    <div class="divider-icon">✦</div>
+    <div class="divider-line"></div>
+  </div>
+
+  <section>
+    <div class="menu-section">
+      <h2>Today's Menu</h2>
+      <p>Tap any dish to see it in augmented reality</p>
+    </div>
+
+    <div class="menu-list" role="list">
+
+      <article class="dish-card" role="listitem">
+        <div class="dish-image">
+          <div class="dish-image-bg" style="background: linear-gradient(145deg, #8B1A00 0%, #C8490A 45%, #E07020 100%);" aria-hidden="true">🍛</div>
+          <img src="/assets/images/jollof-rice.jpg" alt="Jollof Rice" loading="lazy" onerror="this.style.display='none'">
+          <div class="ar-badge" aria-label="AR available">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 2L3 7v10l9 5 9-5V7L12 2z" stroke="#fff" stroke-width="2" stroke-linejoin="round"/>
+              <path d="M12 2v15M3 7l9 5 9-5" stroke="#fff" stroke-width="2" stroke-linejoin="round"/>
+            </svg>
+            AR
+          </div>
+        </div>
+        <div class="dish-body">
+          <div class="dish-meta">
+            <h3 class="dish-name">Jollof Rice</h3>
+            <span class="dish-price">€24.50</span>
+          </div>
+          <p class="dish-desc">
+            Smoky Nigerian jollof rice slow-cooked in a rich tomato and pepper base,
+            served with your choice of grilled chicken, beef, or fish.
+          </p>
+          <div class="dish-tags" aria-label="Dish attributes">
+            <span class="tag">Gluten Free</span>
+            <span class="tag">Classic</span>
+            <span class="tag">Spicy</span>
+          </div>
+          <a class="btn-visualise" href="../?model=jollof-rice">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 2L3 7v10l9 5 9-5V7L12 2z" stroke="#fff" stroke-width="2" stroke-linejoin="round"/>
+              <path d="M12 2v15M3 7l9 5 9-5" stroke="#fff" stroke-width="2" stroke-linejoin="round"/>
+            </svg>
+            Visualise in AR
+          </a>
+        </div>
+      </article>
+
+      <article class="dish-card" role="listitem">
+        <div class="dish-image">
+          <div class="dish-image-bg" style="background: linear-gradient(145deg, #4A3000 0%, #7A5500 45%, #C8A040 100%);" aria-hidden="true">🍲</div>
+          <img src="/assets/images/pounded-yam-egusi.jpg" alt="Pounded Yam and Egusi" loading="lazy" onerror="this.style.display='none'">
+          <div class="ar-badge" aria-label="AR available">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 2L3 7v10l9 5 9-5V7L12 2z" stroke="#fff" stroke-width="2" stroke-linejoin="round"/>
+              <path d="M12 2v15M3 7l9 5 9-5" stroke="#fff" stroke-width="2" stroke-linejoin="round"/>
+            </svg>
+            AR
+          </div>
+        </div>
+        <div class="dish-body">
+          <div class="dish-meta">
+            <h3 class="dish-name">Pounded Yam &amp; Egusi</h3>
+            <span class="dish-price">€16.00</span>
+          </div>
+          <p class="dish-desc">
+            Traditional hand-pounded yam served with rich egusi soup — a hearty
+            blend of ground melon seeds, leafy greens, and smoky stockfish.
+          </p>
+          <div class="dish-tags" aria-label="Dish attributes">
+            <span class="tag">Traditional</span>
+            <span class="tag">High Protein</span>
+            <span class="tag">Spicy</span>
+          </div>
+          <a class="btn-visualise" href="../?model=pounded-yam-egusi">
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M12 2L3 7v10l9 5 9-5V7L12 2z" stroke="#fff" stroke-width="2" stroke-linejoin="round"/>
+              <path d="M12 2v15M3 7l9 5 9-5" stroke="#fff" stroke-width="2" stroke-linejoin="round"/>
+            </svg>
+            Visualise in AR
+          </a>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-powered">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M12 2L3 7v10l9 5 9-5V7L12 2z" stroke="#0EA5E9" stroke-width="2" stroke-linejoin="round"/>
+        <path d="M12 2v15M3 7l9 5 9-5" stroke="#0EA5E9" stroke-width="2" stroke-linejoin="round"/>
+      </svg>
+      Powered by <strong>Forebytes</strong>
+    </div>
+    <p class="footer-note">Point your camera at the table and tap Place.</p>
+  </footer>
+
+</body>
+</html>
