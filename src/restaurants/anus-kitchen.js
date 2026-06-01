@@ -21,9 +21,9 @@ const restaurant = {
     {
       key:         'jollof-rice',
       name:        'Jollof Rice',
-      price:       '€14.50',
+      price:       '€24.50',
       description: 'Smoky Nigerian jollof rice slow-cooked in a rich tomato and pepper base, served with your choice of grilled chicken, beef, or fish.',
-      tags:        ['Gluten Free', 'Nigerian Classic', 'Spicy Option'],
+      tags:        ['Gluten Free', ' Classic', 'Spicy'],
       image:       '/assets/images/jollof-rice.jpg',
       placeholder: { gradient: 'linear-gradient(145deg, #8B1A00 0%, #C8490A 45%, #E07020 100%)', emoji: '🍛' },
       model:       '/assets/models/placeholder.glb',
@@ -31,9 +31,9 @@ const restaurant = {
     {
       key:         'pounded-yam-egusi',
       name:        'Pounded Yam & Egusi',
-      price:       '€16.00',
+      price:       '€26.00',
       description: 'Traditional hand-pounded yam served with rich egusi soup — a hearty blend of ground melon seeds, leafy greens, and smoky stockfish.',
-      tags:        ['Traditional', 'High Protein', "Chef's Pick"],
+      tags:        ['Traditional', 'High Protein', "Spicy"],
       image:       '/assets/images/pounded-yam-egusi.jpg',
       placeholder: { gradient: 'linear-gradient(145deg, #4A3000 0%, #7A5500 45%, #C8A040 100%)', emoji: '🍲' },
       model:       '/assets/models/placeholder.glb',
