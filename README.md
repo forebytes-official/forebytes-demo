@@ -10,12 +10,12 @@ Customers scan a QR code, see the restaurant menu on their phone, tap **Visualis
 
 | Layer | Tool |
 |---|---|
-| Markup | HTML5 |
-| Styles | CSS3 (custom properties, no framework) |
-| Logic | Vanilla JavaScript (ES6+) |
+| UI Framework | React 18 |
+| Build Tool | Vite 5 |
+| Routing | React Router v6 |
 | AR / 3D | [Google Model Viewer 3.4.0](https://modelviewer.dev) |
 | 3D Capture | Polycam (iPhone LiDAR → GLB export) |
-| Hosting | GitHub Pages + Forebytes subdomain |
+| Hosting | Vercel — one deployment, subdomain per restaurant |
 
 ---
 
@@ -24,42 +24,61 @@ Customers scan a QR code, see the restaurant menu on their phone, tap **Visualis
 ```
 forebytes-demo/
 │
-├── <restaurant-slug>/          # One folder per restaurant
-│   ├── index.html              # AR viewer — loads the GLB, triggers AR
-│   ├── viewer.css              # AR viewer styles
-│   ├── viewer.js               # AR logic + dish/model map
-│   └── menu/
-│       ├── index.html          # Menu page — QR code lands here
-│       └── menu.css            # Menu page styles
+├── public/
+│   └── assets/
+│       ├── models/        # GLB files for all restaurants
+│       └── images/        # Dish photos for all restaurants
 │
-└── assets/
-    ├── models/                 # GLB files for every restaurant
-    └── images/                 # Dish photos for every restaurant
+├── src/
+│   ├── components/
+│   │   ├── Header/        # MenuHeader + ViewerHeader variants
+│   │   ├── DishCard/      # Single dish card (image, name, price, AR button)
+│   │   ├── ARViewer/      # Full-screen model viewer + controls
+│   │   └── Footer/        # Forebytes branding footer
+│   │
+│   ├── pages/
+│   │   ├── MenuPage.jsx   # Hero + dish list — QR code lands here
+│   │   └── ViewerPage.jsx # Resolves dish key → renders ARViewer
+│   │
+│   ├── restaurants/
+│   │   ├── anus-kitchen.js  # Anu's Kitchen config + dish data
+│   │   └── index.js         # Subdomain → restaurant map (edit this to add restaurants)
+│   │
+│   ├── hooks/
+│   │   └── useRestaurant.js # Reads window.location.hostname → returns config
+│   │
+│   ├── App.jsx              # Router + injects restaurant theme into CSS variables
+│   └── index.css            # Global reset + default CSS custom properties
+│
+├── index.html               # Vite HTML entry point
+├── vite.config.js
+├── vercel.json              # SPA rewrite — all routes serve index.html
+└── package.json
 ```
-
-Current restaurants:
-
-- [`anus-kitchen/`](anus-kitchen/) — Anu's Kitchen Dublin (pilot 1)
 
 ---
 
 ## Demo Flow
 
 ```
-QR code → /<restaurant>/menu/   →   tap Visualise   →   /<restaurant>/?model=<dish>
-                 ↑                                               ↑
-          menu/index.html                                   index.html
-           + menu.css                                   viewer.css + viewer.js
+QR code → /menu  →  tap Visualise  →  /view/:dishKey
+             ↑                               ↑
+        MenuPage.jsx                   ViewerPage.jsx
+         + DishCard                     + ARViewer
 ```
+
+Subdomain routing: `anuskitchen.forebytes.com` → `useRestaurant()` reads the subdomain → loads Anu's Kitchen config → all components render from that config.
 
 ---
 
 ## Running Locally
 
-1. Open the project folder in VS Code
-2. Install the [Live Server](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer) extension
-3. Right-click any `index.html` and select **Open with Live Server**
-4. On mobile — connect to the same WiFi network and open the Live Server URL in Safari (iPhone) or Chrome (Android)
+```bash
+npm install
+npm run dev
+```
+
+Open `http://localhost:5173` — defaults to Anu's Kitchen in development.
 
 > AR requires a physical device. It will not work in a desktop browser.
 
@@ -67,59 +86,84 @@ QR code → /<restaurant>/menu/   →   tap Visualise   →   /<restaurant>/?mod
 
 ## Adding a New Restaurant
 
-### 1. Create the folder structure
+### 1. Create the restaurant config
 
-Copy an existing restaurant folder and rename it:
+Copy the existing config as a template:
 
-```
-cp -r anus-kitchen/ <new-restaurant-slug>/
-```
-
-### 2. Update the menu page
-
-In `<new-restaurant-slug>/menu/index.html`, replace all instances of the restaurant name, cuisine description, dish names, prices, descriptions, and tags with the new restaurant's content.
-
-For each dish card, set the `href` on the Visualise button:
-
-```html
-<a class="btn-visualise" href="../?model=<dish-key>">
+```bash
+cp src/restaurants/anus-kitchen.js src/restaurants/<slug>.js
 ```
 
-### 3. Update the viewer data
-
-In `<new-restaurant-slug>/viewer.js`, update `DISHES` and `MODELS` at the top of the file:
+Edit the new file — update the restaurant name, tagline, theme colours, and dish data:
 
 ```js
-const DISHES = {
-  'dish-key': 'Dish Display Name',
-  // add more dishes here
+const restaurant = {
+  subdomain: '<slug>',          // must match the subdomain, e.g. 'aperitivo'
+  name:      'Restaurant Name',
+  tagline:   'Cuisine type',
+  eyebrow:   'Location tagline',
+
+  theme: {
+    '--header-bg':  '#...',     // main brand colour
+    '--accent':     '#...',     // gold / highlight colour
+    // ... other colour tokens
+  },
+
+  dishes: [
+    {
+      key:         'dish-slug',
+      name:        'Dish Name',
+      price:       '€00.00',
+      description: '...',
+      tags:        ['Tag 1', 'Tag 2'],
+      image:       '/assets/images/dish-slug.jpg',
+      placeholder: { gradient: 'linear-gradient(...)', emoji: '🍽️' },
+      model:       '/assets/models/dish-slug.glb',
+    },
+  ],
 };
 
-const MODELS = {
-  'dish-key': '/assets/models/<dish-key>.glb',
-  // add more dishes here
+export default restaurant;
+```
+
+### 2. Register the restaurant
+
+Open `src/restaurants/index.js` and add one import and one entry:
+
+```js
+import anusKitchen  from './anus-kitchen';
+import newRestaurant from './<slug>';        // ← add this
+
+const restaurants = {
+  anuskitchen:  anusKitchen,
+  '<slug>':     newRestaurant,               // ← and this
+  localhost:    anusKitchen,
 };
 ```
 
-### 4. Drop in the assets
+### 3. Add the assets
 
 | File | Location |
 |---|---|
-| Dish photos (JPG) | `/assets/images/<dish-key>.jpg` |
-| 3D models (GLB) | `/assets/models/<dish-key>.glb` |
+| Dish photo (JPG) | `public/assets/images/<dish-slug>.jpg` |
+| 3D model (GLB) | `public/assets/models/<dish-slug>.glb` |
 
-The menu page `<img>` tags already point to `/assets/images/<dish-key>.jpg` — adding the file is all that's needed. Same for GLB paths in `viewer.js`.
+### 4. Deploy & configure the subdomain on Vercel
 
-### 5. Customise the styles (optional)
+1. Push to `main`
+2. In the Vercel project dashboard → **Domains** → add `<slug>.forebytes.com`
+3. Vercel routes all traffic to the same deployment — `useRestaurant()` handles the rest
 
-`menu.css` and `viewer.css` are fully independent per restaurant. Update the CSS custom properties in `:root` to match the restaurant's brand colours:
+---
 
-```css
-:root {
-  --header-bg: /* restaurant primary colour */;
-  --accent:    /* restaurant accent colour */;
-}
-```
+## Capturing 3D Models (Polycam)
+
+1. Open Polycam on iPhone 16 Pro
+2. Select **LiDAR** mode
+3. Scan the dish from multiple angles — aim for full coverage of the top and sides
+4. Export as **GLB**
+5. Drop the file into `public/assets/models/` named `<dish-slug>.glb`
+6. Update the `model` field in the restaurant config
 
 ---
 
@@ -131,24 +175,13 @@ The menu page `<img>` tags already point to `/assets/images/<dish-key>.jpg` — 
 
 ---
 
-## Capturing 3D Models (Polycam)
-
-1. Open Polycam on iPhone 16 Pro
-2. Select **LiDAR** mode
-3. Scan the dish from multiple angles — aim for full coverage of the top and sides
-4. Export as **GLB**
-5. Drop the file into `/assets/models/` named `<dish-key>.glb`
-6. Update `MODELS` in the restaurant's `viewer.js`
-
----
-
 ## Deployment
 
-Each restaurant demo is hosted on a Forebytes subdomain. The subdomain serves the root of this repo, so paths like `/anus-kitchen/menu/` and `/assets/models/` resolve correctly.
+One Vercel project, one deployment. Each restaurant gets its own subdomain pointed at the same project.
 
 | Restaurant | URL |
 |---|---|
-| Anu's Kitchen | `anuskitchen.forebytes.com/anus-kitchen/menu/` |
+| Anu's Kitchen | `anuskitchen.forebytes.com` |
 | _(next restaurant)_ | _(TBC)_ |
 
-QR codes should point directly to the `/menu/` page for the relevant restaurant.
+QR codes should point directly to `https://<slug>.forebytes.com/menu`.
