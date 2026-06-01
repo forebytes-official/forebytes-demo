@@ -1,0 +1,28 @@
+/* Global reset and base styles.
+   CSS custom properties are defaults — App.jsx overrides them per restaurant. */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:          #FEF7EE;
+  --header-bg:   #1C0A00;
+  --accent:      #C8860A;
+  --accent-dark: #9A6408;
+  --text:        #1C0A00;
+  --text-muted:  #7A5C48;
+  --card-bg:     #FFFFFF;
+  --border:      #EDD9C0;
+  --badge-bg:    #FFF3DC;
+  --badge-text:  #92570A;
+  --ar-btn:      #0EA5E9;
+  --ar-btn-dark: #0284C7;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
