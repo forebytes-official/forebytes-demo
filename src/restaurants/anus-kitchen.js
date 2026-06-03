@@ -27,6 +27,7 @@ const restaurant = {
       image:       '/assets/images/jollof-rice.jpg',
       placeholder: { gradient: 'linear-gradient(145deg, #8B1A00 0%, #C8490A 45%, #E07020 100%)', emoji: '🍛' },
       model:       '/assets/models/jollof-rice.glb',
+      scale:       '0.2 0.2 0.2',
     },
     {
       key:         'pounded-yam-egusi',
@@ -37,6 +38,7 @@ const restaurant = {
       image:       '/assets/images/pounded-yam-egusi.jpg',
       placeholder: { gradient: 'linear-gradient(145deg, #4A3000 0%, #7A5500 45%, #C8A040 100%)', emoji: '🍲' },
       model:       '/assets/models/ponded-yam-egusi.glb',
+      scale:       '0.2 0.2 0.2',
     },
   ],
 };

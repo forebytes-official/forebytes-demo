@@ -39,6 +39,7 @@ export default function ARViewer({ dish }) {
     mv.setAttribute('rotation-per-second','20deg');
     mv.setAttribute('shadow-intensity',   '1');
     mv.setAttribute('exposure',           '1');
+    mv.setAttribute('scale',              dish.scale ?? '1 1 1');
     mv.className = 'model-viewer-el';
 
     const poster = document.createElement('div');
