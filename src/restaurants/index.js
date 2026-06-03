@@ -10,7 +10,7 @@ import aperitivoatthecafe  from './aperitivo';
 
 const restaurants = {
   anuskitchen: anusKitchen,
-  aperitivoatthecafe:   aperitivoatthecafe,
+  aperitivioatthecafe:  aperitivoatthecafe,
   localhost:   anusKitchen,   // change this to whichever you're currently testing
 };
 
