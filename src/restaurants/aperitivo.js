@@ -1,5 +1,5 @@
 const restaurant = {
-  subdomain: 'aperitivo',
+  subdomain: 'aperitivoatthecafe',
   name:      'Aperitivo at the Cafe',
   tagline:   'Italian Café & Restaurant',
   eyebrow:   'Glasthule Village — A Taste of Italy',
