@@ -11,7 +11,7 @@ import aperitivo  from './aperitivo';
 const restaurants = {
   anuskitchen: anusKitchen,
   aperitivo:   aperitivo,
-  localhost:   aperitivo,   // change this to whichever you're currently testing
+  localhost:   anusKitchen,   // change this to whichever you're currently testing
 };
 
 export default restaurants;
