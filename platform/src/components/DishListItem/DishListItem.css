@@ -1,0 +1,108 @@
+.dish-list-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.12s ease;
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.dish-list-item.in-view {
+  animation: fade-rise-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.dish-list-item:active { transform: scale(0.98); }
+
+.dish-list-item:focus-visible {
+  outline: 2px solid var(--ar-btn);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dish-list-item { transition: none; opacity: 1; transform: none; animation: none; }
+  .dish-list-item:active { transform: none; }
+}
+
+/* ── Body ── */
+
+.dish-list-body { flex: 1; min-width: 0; }
+
+.dish-list-badge {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--accent-dark);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.dish-list-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.3;
+}
+
+.dish-list-desc {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin-top: 2px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.dish-list-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.dish-list-tag {
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--badge-text);
+  background: var(--badge-bg);
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+
+/* ── Right column ── */
+
+.dish-list-right {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.dish-list-price {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent-dark);
+  white-space: nowrap;
+}
+
+.dish-list-ar-badge {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fff;
+  background: rgba(14,165,233,0.92);
+  padding: 2px 6px;
+  border-radius: 20px;
+}

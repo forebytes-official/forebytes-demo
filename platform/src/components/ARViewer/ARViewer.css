@@ -1,0 +1,183 @@
+.viewer-page--dark {
+  background: #0D0D0D;
+  height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* model-viewer fills remaining height below the fixed header */
+.viewer-container {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.model-viewer-el {
+  width: 100%;
+  height: 100%;
+  background: #111;
+  --poster-color: #111;
+  display: block;
+}
+
+.model-viewer-el::part(default-progress-bar) { background: var(--ar-btn); }
+.model-viewer-el::part(default-ar-button)    { display: none; }
+
+.poster-slot {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #111;
+  overflow: hidden;
+}
+
+/* Subtle diagonal scan sweep — reinforces "this is a tech/AR product" while
+   the (often multi-MB) model streams in, rather than a static frozen icon. */
+.poster-slot::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, transparent 42%, rgba(14,165,233,0.14) 50%, transparent 58%);
+  background-size: 250% 250%;
+  animation: poster-scan 2.6s ease-in-out infinite;
+}
+
+@keyframes poster-scan {
+  0%   { background-position: 220% 0%; }
+  100% { background-position: -60% 0%; }
+}
+
+.poster-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.poster-cube { animation: poster-pulse 1.8s ease-in-out infinite; }
+
+@keyframes poster-pulse {
+  0%, 100% { opacity: 0.5; transform: scale(0.92); }
+  50%      { opacity: 1; transform: scale(1); }
+}
+
+.poster-text {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.55);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .poster-slot::before { animation: none; }
+  .poster-cube { animation: none; opacity: 1; transform: none; }
+}
+
+/* ── Controls bar ── */
+
+.controls {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px 16px calc(16px + env(safe-area-inset-bottom));
+  background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  z-index: 100;
+}
+
+.controls-dish-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  text-align: center;
+}
+
+.controls-hint {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.55);
+  text-align: center;
+}
+
+.ar-unsupported {
+  font-size: 0.78rem;
+  color: #fff;
+  background: rgba(200,134,10,0.92);
+  border-radius: 8px;
+  padding: 8px 16px;
+  text-align: center;
+  max-width: 340px;
+  width: 100%;
+}
+
+.btn-ar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 340px;
+  padding: 14px;
+  background: var(--ar-btn);
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.12s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn-ar:active { background: var(--ar-btn-dark); transform: scale(0.98); }
+
+@media (prefers-reduced-motion: reduce) {
+  .btn-ar { transition: none; }
+  .btn-ar:active { transform: none; }
+}
+
+/* ── Error screen ── */
+
+.error-screen {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 40px 24px;
+  text-align: center;
+}
+
+.error-screen h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem;
+  color: #fff;
+}
+
+.error-screen p {
+  font-size: 0.85rem;
+  color: rgba(255,255,255,0.55);
+  max-width: 280px;
+  line-height: 1.6;
+}
+
+.error-screen a {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ar-btn);
+  text-decoration: none;
+}
