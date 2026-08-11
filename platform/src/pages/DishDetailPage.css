@@ -377,6 +377,23 @@
   transform: scale(0.98);
 }
 
+.dish-detail-ar-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.dish-detail-ar-unsupported {
+  text-align: center;
+  font-size: 0.72rem;
+  color: var(--accent-dark);
+  margin-top: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dish-detail-ar-btn { transition: none; }
+  .dish-detail-ar-btn:active { transform: none; }
+}
+
 /* ── Simple layout: no photo, no 3D model ──
    A plain scrolling page instead of the fixed-hero/draggable-sheet treatment,
    which only makes sense when there's real visual content to peek behind. */

@@ -31,11 +31,14 @@ const WarningIcon = () => (
 const FULL_OFFSET = 0;
 const TAP_THRESHOLD = 6;
 
-// Passive, auto-rotating showcase of the real 3D model — model-viewer handles
-// the 360 rotation natively, so no CSS animation trickery is needed here.
-// camera-controls is intentionally omitted so it doesn't fight the sheet's
-// own drag gesture; the interactive viewer lives at /view/:dishKey.
-function HeroModel({ dish, onError }) {
+// Auto-rotating showcase of the real 3D model, doubling as the AR launch
+// point — carries ar/ar-modes so the CTA button below can call
+// activateAR() on it directly instead of navigating to a second page that
+// just shows the same model again. camera-controls is intentionally omitted
+// so manual rotation doesn't fight the sheet's own drag gesture; the
+// standalone interactive viewer still lives at /view/:dishKey for anyone who
+// wants to inspect the model before deciding to go into AR.
+function HeroModel({ dish, onError, onReady }) {
   const containerRef = useRef(null);
 
   useEffect(() => {
@@ -53,11 +56,14 @@ function HeroModel({ dish, onError }) {
     mv.setAttribute('auto-rotate-delay',   '0');
     mv.setAttribute('rotation-per-second', '30deg');
     mv.setAttribute('disable-zoom',        '');
+    mv.setAttribute('ar',                  '');
+    mv.setAttribute('ar-modes',            'quick-look scene-viewer webxr');
     mv.setAttribute('shadow-intensity',    '1');
     mv.setAttribute('exposure',            '1');
     if (dish.scale) mv.setAttribute('scale', dish.scale);
     mv.className = 'dish-detail-hero-model';
     mv.addEventListener('error', onError);
+    mv.addEventListener('load', () => onReady?.(mv));
 
     containerRef.current.appendChild(mv);
     return () => {
@@ -168,6 +174,9 @@ export default function DishDetailPage({ restaurant }) {
   const { dishKey } = useParams();
   const dish = restaurant.dishes.find(d => d.key === dishKey);
   const [modelFailed, setModelFailed] = useState(false);
+  const [modelReady, setModelReady] = useState(false);
+  const [arUnsupported, setArUnsupported] = useState(false);
+  const heroModelRef = useRef(null);
 
   // model-viewer/the fallback photo auto-centers within the full-height hero
   // container, not around wherever the sheet happens to end — so the peek
@@ -226,13 +235,31 @@ export default function DishDetailPage({ restaurant }) {
     };
   }, [dragging]);
 
-  useEffect(() => { setModelFailed(false); }, [dishKey]);
+  useEffect(() => {
+    setModelFailed(false);
+    setModelReady(false);
+    setArUnsupported(false);
+    heroModelRef.current = null;
+  }, [dishKey]);
 
   if (!dish) return <Navigate to="/menu" replace />;
 
   const hasAllergens  = Array.isArray(dish.allergens) && dish.allergens.length > 0;
   const showHeroModel = Boolean(dish.model) && !modelFailed;
   const hasVisual      = Boolean(dish.model) || Boolean(dish.image);
+
+  const handleHeroModelReady = mv => {
+    heroModelRef.current = mv;
+    setModelReady(true);
+  };
+
+  const handleVisualise = () => {
+    if (heroModelRef.current?.canActivateAR) {
+      heroModelRef.current.activateAR();
+    } else {
+      setArUnsupported(true);
+    }
+  };
 
   // Dish has neither a 3D model nor a photo — skip the immersive fixed-hero
   // treatment entirely rather than filling the empty space with a giant emoji.
@@ -249,7 +276,7 @@ export default function DishDetailPage({ restaurant }) {
     <div className="dish-detail-page">
       <div className="dish-detail-hero">
         {showHeroModel ? (
-          <HeroModel dish={dish} onError={() => setModelFailed(true)} />
+          <HeroModel dish={dish} onError={() => setModelFailed(true)} onReady={handleHeroModelReady} />
         ) : (
           <div className="dish-detail-hero-visual" style={{ background: dish.placeholder.gradient }}>
             <img
@@ -294,11 +321,20 @@ export default function DishDetailPage({ restaurant }) {
 
       {dish.model && (
         <div className="dish-detail-cta-bar">
-          <Link to={`/view/${dish.key}`} className="dish-detail-ar-btn">
+          <button
+            type="button"
+            className="dish-detail-ar-btn"
+            onClick={handleVisualise}
+            disabled={!modelReady}
+          >
             <CubeIcon />
-            Visualise on your table
-          </Link>
-          <p className="dish-detail-ar-hint">Point your camera at the table and tap Place</p>
+            {modelReady ? 'Visualise on your table' : 'Preparing 3D model…'}
+          </button>
+          {arUnsupported ? (
+            <p className="dish-detail-ar-unsupported">AR requires Safari on iPhone or Chrome on Android.</p>
+          ) : (
+            <p className="dish-detail-ar-hint">Point your camera at the table and tap Place</p>
+          )}
         </div>
       )}
     </div>

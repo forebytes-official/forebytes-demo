@@ -185,7 +185,7 @@ export default function MenuPage({ restaurant }) {
         <div className="hero-content">
           <div className="hero-eyebrow fade-rise-in" style={{ animationDelay: '0.05s' }}>{restaurant.eyebrow}</div>
           <h1 className="fade-rise-in" style={{ animationDelay: '0.15s' }}>Welcome to<br /><em>{restaurant.name}</em></h1>
-          <p className="fade-rise-in" style={{ animationDelay: '0.25s' }}>{restaurant.tagline} — made fresh, every day.</p>
+          <p className="fade-rise-in" style={{ animationDelay: '0.25s' }}>{restaurant.tagline}, made fresh every day.</p>
         </div>
 
         <button type="button" className="hero-scroll-cue" onClick={scrollPastHero}>
