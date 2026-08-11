@@ -7,10 +7,14 @@
 // AR models: real per-dish scans pulled in for the dishes the kitchen has
 // photographed so far. Everything else still has none — no fake/shared
 // placeholder model, so no AR badge shows until a real scan exists for it.
-// `scale` starts at 0.35 0.35 0.35 for all of them (0.2 baseline corrected
-// for real-world AR size, then bumped ~1.75x per feedback on perceived size).
-// Not verified on a real device per dish yet — check actual AR placement size
-// and adjust per-model if off.
+// `scale` is set per dish, not a single shared value — the raw scans vary
+// wildly in scale from each other (measured bounding boxes ranged ~26cm to
+// over a meter across their widest dimension for what are all similarly
+// sized plates), so a uniform multiplier made some dishes tiny and others
+// oversized. Each scale below was computed to bring that dish's own raw
+// model to roughly the same real-world size (~27cm across) as the others.
+// Not verified on a real device yet — check actual AR placement size and
+// adjust per-model if off.
 
 const ALLERGEN = { CRUSTACEAN: 2, FISH: 4, SOY: 6, MOLLUSC: 14, GLUTEN: 1 };
 
@@ -44,15 +48,31 @@ const restaurant = {
       price:       '€18.00',
       description: 'The classic tomato-based party jollof rice, slow-cooked with peppers and spices, served with sweet fried plantain.',
       tags:        ['Nigerian Classic', 'Popular'],
-      image:       '/assets/images/jollof-rice-plantain.jpg',
+      image:       null,
       placeholder: { gradient: 'linear-gradient(145deg, #8B1A00 0%, #C8490A 45%, #E07020 100%)', emoji: '🍛' },
-      model:       '/assets/models/jollof-rice-plantain.glb',
-      scale:       '0.35 0.35 0.35',
       allergens:   [],
       portion:     'A full plate of rice with a generous side of fried plantain.',
       ingredients: 'Rice, tomatoes, red bell peppers, scotch bonnet, onions, fried plantain.',
       chefNote:    'Smoked over an open flame for that authentic party-jollof char.',
       badge:       'Signature',
+    },
+    {
+      // A real 3D scan exists for this exact plate (jollof rice with coleslaw,
+      // beef, and chicken — not the plantain-based "Jollof Rice & Plantain"
+      // line item above, which the scan doesn't actually match). Likely a
+      // protein-choice variant of the same base dish; price unconfirmed.
+      key:         'jollof-rice-coleslaw-beef-chicken',
+      name:        'Jollof Rice with Beef & Chicken',
+      category:    'Rice Dishes',
+      price:       'Ask your server',
+      description: 'Smoky party jollof rice served with coleslaw, beef, and chicken.',
+      tags:        ['Nigerian Classic'],
+      image:       null,
+      placeholder: { gradient: 'linear-gradient(145deg, #8B1A00 0%, #C8490A 45%, #E07020 100%)', emoji: '🍛' },
+      model:       '/assets/models/jollof-rice-coleslaw-beef-chicken.glb',
+      scale:       '0.414 0.414 0.414',
+      allergens:   [],
+      ingredients: 'Rice, tomatoes, red bell peppers, scotch bonnet, onions, coleslaw, beef, chicken.',
     },
     {
       key:         'fried-rice-plantain',
@@ -63,10 +83,25 @@ const restaurant = {
       tags:        ['Popular'],
       image:       null,
       placeholder: { gradient: 'linear-gradient(145deg, #3A4A00 0%, #6B8500 45%, #A8C840 100%)', emoji: '🍚' },
-      model:       '/assets/models/fried-rice-plantain.glb',
-      scale:       '0.35 0.35 0.35',
       allergens:   [],
       ingredients: 'Rice, mixed vegetables, curry powder, vegetable oil, fried plantain.',
+    },
+    {
+      // Same situation as the jollof rice entry above — real scan, but shows
+      // coleslaw and chicken, not the plantain the "Fried Rice & Plantain"
+      // line item describes. Price unconfirmed.
+      key:         'fried-rice-chicken-coleslaw',
+      name:        'Fried Rice with Chicken & Coleslaw',
+      category:    'Rice Dishes',
+      price:       'Ask your server',
+      description: 'Nigerian-style fried rice with mixed vegetables, served with chicken and coleslaw.',
+      tags:        ['Popular'],
+      image:       null,
+      placeholder: { gradient: 'linear-gradient(145deg, #3A4A00 0%, #6B8500 45%, #A8C840 100%)', emoji: '🍚' },
+      model:       '/assets/models/fried-rice-chicken-coleslaw.glb',
+      scale:       '0.310 0.310 0.310',
+      allergens:   [],
+      ingredients: 'Rice, mixed vegetables, curry powder, vegetable oil, chicken, coleslaw.',
     },
     {
       key:         'white-rice-ayamase',
@@ -78,7 +113,7 @@ const restaurant = {
       image:       null,
       placeholder: { gradient: 'linear-gradient(145deg, #1A3000 0%, #3A5500 45%, #6B8A20 100%)', emoji: '🌶️' },
       model:       '/assets/models/white-rice-ayamase.glb',
-      scale:       '0.35 0.35 0.35',
+      scale:       '0.828 0.828 0.828',
       allergens:   [],
       ingredients: 'White rice, green bell peppers, scotch bonnet, assorted meat, locust beans, palm oil.',
     },
@@ -119,7 +154,7 @@ const restaurant = {
       image:       null,
       placeholder: { gradient: 'linear-gradient(145deg, #2A3A00 0%, #5C7500 45%, #96B830 100%)', emoji: '🍚' },
       model:       '/assets/models/rice-beans-designer-stew.glb',
-      scale:       '0.35 0.35 0.35',
+      scale:       '0.245 0.245 0.245',
       allergens:   [],
       ingredients: 'White rice, black-eyed peas, green bell peppers, scotch bonnet, palm oil, assorted meat.',
     },
@@ -189,7 +224,7 @@ const restaurant = {
       image:       null,
       placeholder: { gradient: 'linear-gradient(145deg, #142600 0%, #2E4A00 45%, #5C7A20 100%)', emoji: '🥘' },
       model:       '/assets/models/efo-riro-solid.glb',
-      scale:       '0.35 0.35 0.35',
+      scale:       '0.877 0.877 0.877',
       allergens:   [ALLERGEN.FISH, ALLERGEN.CRUSTACEAN],
       ingredients: 'Leafy greens, palm oil, assorted meat, fish, crayfish, swallow.',
     },
@@ -279,7 +314,7 @@ const restaurant = {
       image:       '/assets/images/asun-goatmeat.jpg',
       placeholder: { gradient: 'linear-gradient(145deg, #5C1A00 0%, #8B3A10 45%, #C06030 100%)', emoji: '🔥' },
       model:       '/assets/models/asun-goatmeat.glb',
-      scale:       '0.35 0.35 0.35',
+      scale:       '1.036 1.036 1.036',
       allergens:   [],
       portion:     'A sharing plate of chopped, bite-sized pieces, great as a starter or side.',
       ingredients: 'Goat meat, bell peppers, onions, scotch bonnet, palm/vegetable oil.',
@@ -399,7 +434,7 @@ const restaurant = {
       image:       null,
       placeholder: { gradient: 'linear-gradient(145deg, #6B1A0A 0%, #B84A28 45%, #E08050 100%)', emoji: '🍝' },
       model:       '/assets/models/spaghetti-jollof-beef-chicken.glb',
-      scale:       '0.35 0.35 0.35',
+      scale:       '0.267 0.267 0.267',
       allergens:   [ALLERGEN.GLUTEN],
       ingredients: 'Spaghetti, tomatoes, red peppers, scotch bonnet, beef, chicken.',
     },

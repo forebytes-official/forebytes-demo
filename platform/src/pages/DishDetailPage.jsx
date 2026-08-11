@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useParams, Navigate, Link } from 'react-router-dom';
 import './DishDetailPage.css';
 
@@ -31,13 +31,14 @@ const WarningIcon = () => (
 const FULL_OFFSET = 0;
 const TAP_THRESHOLD = 6;
 
-// Auto-rotating showcase of the real 3D model, doubling as the AR launch
-// point — carries ar/ar-modes so the CTA button below can call
-// activateAR() on it directly instead of navigating to a second page that
-// just shows the same model again. camera-controls is intentionally omitted
-// so manual rotation doesn't fight the sheet's own drag gesture; the
-// standalone interactive viewer still lives at /view/:dishKey for anyone who
-// wants to inspect the model before deciding to go into AR.
+// Interactive showcase of the real 3D model, doubling as the AR launch point
+// — carries ar/ar-modes so the CTA button below can call activateAR() on it
+// directly instead of navigating to a second page that just shows the same
+// model again. camera-controls lives here now too (rotate/pinch-zoom,
+// merged in from the old standalone viewer) — it doesn't fight the sheet's
+// drag gesture since that's scoped to the sheet's own header/handle, a
+// separate element from the model area. The standalone /view/:dishKey page
+// still exists for direct/shareable links.
 function HeroModel({ dish, onError, onReady }) {
   const containerRef = useRef(null);
 
@@ -52,10 +53,10 @@ function HeroModel({ dish, onError, onReady }) {
     const mv = document.createElement('model-viewer');
     mv.setAttribute('src',                 dish.model);
     mv.setAttribute('alt',                 `3D preview of ${dish.name}`);
+    mv.setAttribute('camera-controls',     '');
     mv.setAttribute('auto-rotate',         '');
     mv.setAttribute('auto-rotate-delay',   '0');
     mv.setAttribute('rotation-per-second', '30deg');
-    mv.setAttribute('disable-zoom',        '');
     mv.setAttribute('ar',                  '');
     mv.setAttribute('ar-modes',            'quick-look scene-viewer webxr');
     mv.setAttribute('shadow-intensity',    '1');
@@ -130,12 +131,13 @@ function DishInfoSections({ dish, hasAllergens }) {
 }
 
 function DishTitleBlock({ dish }) {
+  const isPriceNote = !dish.price.includes('€');
   return (
     <>
       {dish.category && <p className="dish-detail-category">{dish.category}</p>}
       <div className="dish-detail-title-row">
         <h1 className="dish-detail-name">{dish.name}</h1>
-        <span className="dish-detail-price">{dish.price}</span>
+        <span className={isPriceNote ? 'dish-detail-price-note' : 'dish-detail-price'}>{dish.price}</span>
       </div>
       {dish.tags?.length > 0 && (
         <div className="dish-detail-tags" aria-label="Dish attributes">
@@ -183,6 +185,14 @@ export default function DishDetailPage({ restaurant }) {
   // needs to reveal enough of that container for the dish's center to clear
   // the sheet's edge, or most of it sits hidden behind the sheet at rest.
   const peekOffsetRef = useRef(typeof window !== 'undefined' ? window.innerHeight * 0.56 : 380);
+  // How far the sheet can be dragged down past "peek". Needs to clear two
+  // things measured below, once known: the panel's own 56px top inset (so
+  // its whole height isn't pushed off-screen with nothing left to grab), and
+  // the fixed AR CTA bar, which sits on top of the sheet at a higher z-index
+  // — without accounting for its height, the "handle" left visible after
+  // collapsing is actually the CTA bar covering it, not grabbable at all.
+  const collapsedOffsetRef = useRef(typeof window !== 'undefined' ? window.innerHeight - 112 : 640);
+  const ctaBarRef = useRef(null);
   const prefersReducedMotion = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   // Sheet starts off-screen and slides up to its resting "peek" position on mount —
   // matches the native bottom-sheet feel the drag gesture already implies.
@@ -206,12 +216,25 @@ export default function DishDetailPage({ restaurant }) {
     return () => { cancelAnimationFrame(raf1); cancelAnimationFrame(raf2); };
   }, []);
 
+  useLayoutEffect(() => {
+    const HANDLE_VISIBLE = 64; // desired grabbable strip height once collapsed
+    const measure = () => {
+      const ctaHeight = ctaBarRef.current?.offsetHeight || 0;
+      collapsedOffsetRef.current = window.innerHeight - 56 - ctaHeight - HANDLE_VISIBLE;
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    if (ctaBarRef.current) ro.observe(ctaBarRef.current);
+    window.addEventListener('resize', measure);
+    return () => { ro.disconnect(); window.removeEventListener('resize', measure); };
+  }, [dishKey]);
+
   useEffect(() => {
     if (!dragging) return;
 
     const handleMove = e => {
       const dy = e.clientY - dragStart.current.y;
-      const next = Math.max(FULL_OFFSET, Math.min(dragStart.current.offset + dy, peekOffsetRef.current));
+      const next = Math.max(FULL_OFFSET, Math.min(dragStart.current.offset + dy, collapsedOffsetRef.current));
       setOffset(next);
     };
 
@@ -219,10 +242,18 @@ export default function DishDetailPage({ restaurant }) {
       const traveled = Math.abs(e.clientY - dragStart.current.y);
       setOffset(prev => {
         if (traveled < TAP_THRESHOLD) {
-          // Treated as a tap on the handle — toggle instead of snapping back.
+          // Treated as a tap on the handle — toggle between full and peek
+          // (dragging further down to fully collapse is a deliberate gesture,
+          // not something a stray tap should jump to).
           return dragStart.current.offset > peekOffsetRef.current / 2 ? FULL_OFFSET : peekOffsetRef.current;
         }
-        return prev > peekOffsetRef.current / 2 ? peekOffsetRef.current : FULL_OFFSET;
+        // A real drag snaps to whichever of the three resting positions —
+        // full, peek, or collapsed (out of the way, for playing with the
+        // model) — ended up nearest to where the user let go.
+        const stops = [FULL_OFFSET, peekOffsetRef.current, collapsedOffsetRef.current];
+        return stops.reduce((nearest, stop) =>
+          Math.abs(stop - prev) < Math.abs(nearest - prev) ? stop : nearest
+        );
       });
       setDragging(false);
     };
@@ -320,7 +351,7 @@ export default function DishDetailPage({ restaurant }) {
       </div>
 
       {dish.model && (
-        <div className="dish-detail-cta-bar">
+        <div ref={ctaBarRef} className="dish-detail-cta-bar">
           <button
             type="button"
             className="dish-detail-ar-btn"

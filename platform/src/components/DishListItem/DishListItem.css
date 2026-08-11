@@ -93,6 +93,14 @@
   white-space: nowrap;
 }
 
+.dish-list-price-note {
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-align: right;
+  max-width: 64px;
+}
+
 .dish-list-ar-badge {
   display: flex;
   align-items: center;

@@ -42,7 +42,7 @@ export default function DishListItem({ dish }) {
       </div>
 
       <div className="dish-list-right">
-        <span className="dish-list-price">{dish.price}</span>
+        <span className={dish.price.includes('€') ? 'dish-list-price' : 'dish-list-price-note'}>{dish.price}</span>
         {dish.model && (
           <span className="dish-list-ar-badge glow-pulse" aria-label="AR available">
             <CubeIcon />

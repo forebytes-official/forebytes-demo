@@ -28,6 +28,11 @@
   display: block;
   background: #111;
   --poster-color: #111;
+  /* model-viewer centers the model within this whole 100dvh container by
+     default, but the sheet covers over half the screen — that center point
+     ends up sitting low in the space that's actually visible. Shift the
+     rendered model up so it sits comfortably within the revealed area. */
+  transform: translateY(-100px);
 }
 
 .dish-detail-hero-model::part(default-progress-bar) { background: var(--ar-btn); }
@@ -182,6 +187,8 @@
 }
 
 .dish-detail-name {
+  flex: 1;
+  min-width: 0;
   font-family: 'Playfair Display', serif;
   font-size: 1.5rem;
   font-weight: 700;
@@ -190,11 +197,25 @@
 }
 
 .dish-detail-price {
+  flex: none;
   font-size: 1.3rem;
   font-weight: 700;
   color: var(--text);
   white-space: nowrap;
   text-align: right;
+}
+
+/* A price placeholder like "Ask your server" isn't a number — keep it small
+   and quiet instead of matching the bold price treatment, which made it
+   dominate the row and squeeze the dish name onto three lines. */
+.dish-detail-price-note {
+  flex: none;
+  max-width: 96px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-align: right;
+  padding-top: 5px;
 }
 
 .dish-detail-tags {
