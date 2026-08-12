@@ -215,18 +215,21 @@ const restaurant = {
       ingredients: 'Bitter leaf, cocoyam, palm oil, assorted meat, fish.',
     },
     {
-      key:         'efo-riro-solid',
-      name:        'Efo Riro With Solid',
+      // Real scan shows this specifically served with pounded yam, not a
+      // generic "solid" swallow choice — named and priced accordingly rather
+      // than reusing the live menu's ranged "Efo Riro With Solid" listing.
+      key:         'pounded-yam-efo-riro',
+      name:        'Pounded Yam & Efo Riro',
       category:    'Soups & Swallow',
-      price:       '€12.00 – €18.00',
-      description: "Rich Yoruba vegetable stew of leafy greens and peppers with assorted meat and fish, served with a \"solid\" swallow such as eba, semo, or pounded yam.",
+      price:       'Ask your server',
+      description: 'Rich Yoruba vegetable stew of leafy greens and peppers with assorted meat and fish, served with pounded yam.',
       tags:        ['Traditional'],
       image:       null,
       placeholder: { gradient: 'linear-gradient(145deg, #142600 0%, #2E4A00 45%, #5C7A20 100%)', emoji: '🥘' },
-      model:       '/assets/models/efo-riro-solid.glb',
+      model:       '/assets/models/pounded-yam-efo-riro.glb',
       scale:       '0.877 0.877 0.877',
       allergens:   [ALLERGEN.FISH, ALLERGEN.CRUSTACEAN],
-      ingredients: 'Leafy greens, palm oil, assorted meat, fish, crayfish, swallow.',
+      ingredients: 'Leafy greens, palm oil, assorted meat, fish, crayfish, pounded yam.',
     },
     {
       key:         'seafood-okro',
