@@ -1,0 +1,462 @@
+.dish-detail-page {
+  position: relative;
+  height: 100dvh;
+  overflow: hidden;
+  background: #0D0D0D;
+}
+
+/* ── Hero (fixed full-screen backdrop) ── */
+
+.dish-detail-hero {
+  position: fixed;
+  inset: 0;
+  height: 100dvh;
+  overflow: hidden;
+  z-index: 1;
+}
+
+/* ── Real 3D model showcase (auto-rotate is native to model-viewer) ── */
+
+.dish-detail-hero-model-container {
+  position: absolute;
+  inset: 0;
+}
+
+.dish-detail-hero-model {
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: #111;
+  --poster-color: #111;
+  /* model-viewer centers the model within this whole 100dvh container by
+     default, but the sheet covers over half the screen — that center point
+     ends up sitting low in the space that's actually visible. Shift the
+     rendered model up so it sits comfortably within the revealed area. */
+  transform: translateY(-100px);
+}
+
+.dish-detail-hero-model::part(default-progress-bar) { background: var(--ar-btn); }
+
+/* ── Static fallback (no model yet / model failed to load) ── */
+
+.dish-detail-hero-visual {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dish-detail-hero-visual img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.dish-detail-back {
+  position: fixed;
+  top: 16px;
+  left: calc(50% - 240px + 16px);
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.35);
+  backdrop-filter: blur(10px) saturate(160%);
+  -webkit-backdrop-filter: blur(10px) saturate(160%);
+  border-radius: 50%;
+  z-index: 3;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.12s ease, background 0.15s ease;
+}
+
+.dish-detail-back:active { transform: scale(0.9); background: rgba(0,0,0,0.5); }
+
+@media (prefers-reduced-motion: reduce) {
+  .dish-detail-back { transition: none; }
+  .dish-detail-back:active { transform: none; }
+}
+
+@media (max-width: 512px) {
+  .dish-detail-back { left: 16px; }
+}
+
+.dish-detail-badge {
+  position: fixed;
+  top: 16px;
+  right: calc(50% - 240px + 16px);
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 5px 12px;
+  border-radius: 20px;
+  z-index: 3;
+}
+
+@media (max-width: 512px) {
+  .dish-detail-badge { right: 16px; }
+}
+
+.dish-detail-ar-ready {
+  position: fixed;
+  top: 62px;
+  right: calc(50% - 240px + 16px);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(10px) saturate(160%);
+  -webkit-backdrop-filter: blur(10px) saturate(160%);
+  color: #fff;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 5px 10px;
+  border-radius: 20px;
+  text-decoration: none;
+  z-index: 3;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s ease;
+}
+
+.dish-detail-ar-ready:active { background: rgba(0,0,0,0.65); }
+
+@media (max-width: 512px) {
+  .dish-detail-ar-ready { right: 16px; }
+}
+
+/* ── Pull-up sheet ── */
+
+.dish-detail-panel {
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  width: 100%;
+  max-width: 480px;
+  height: calc(100dvh - 56px);
+  background: var(--bg);
+  border-radius: 20px 20px 0 0;
+  box-shadow: 0 -8px 30px rgba(0,0,0,0.3);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  will-change: transform;
+  transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.dish-detail-panel.dragging { transition: none; }
+
+.dish-detail-panel-header {
+  flex-shrink: 0;
+  padding: 10px 20px 0;
+  cursor: grab;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.dish-detail-handle {
+  width: 36px;
+  height: 4px;
+  background: var(--border);
+  border-radius: 4px;
+  margin: 0 auto 14px;
+}
+
+.dish-detail-category {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.dish-detail-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.dish-detail-name {
+  flex: 1;
+  min-width: 0;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.dish-detail-price {
+  flex: none;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  text-align: right;
+}
+
+/* A price placeholder like "Ask your server" isn't a number — keep it small
+   and quiet instead of matching the bold price treatment, which made it
+   dominate the row and squeeze the dish name onto three lines. */
+.dish-detail-price-note {
+  flex: none;
+  max-width: 96px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-align: right;
+  padding-top: 5px;
+}
+
+.dish-detail-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.dish-detail-tag {
+  font-size: 0.68rem;
+  font-weight: 500;
+  color: var(--badge-text);
+  background: var(--badge-bg);
+  border: 1px solid #EDD9AA;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+/* ── Scrollable content ── */
+
+.dish-detail-panel-scroll {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 4px 20px 0;
+  border-top: 1px solid var(--border);
+}
+
+.dish-detail-section { padding: 18px 0; }
+.dish-detail-section + .dish-detail-section { border-top: 1px solid var(--border); }
+
+.dish-detail-section-heading {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.dish-detail-desc {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  line-height: 1.65;
+  margin-bottom: 16px;
+}
+
+.dish-detail-box {
+  background: var(--badge-bg);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+}
+
+.dish-detail-box-label {
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--badge-text);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.dish-detail-box p { font-size: 0.84rem; color: var(--text); line-height: 1.5; }
+
+.dish-detail-chef-note {
+  border-left: 3px solid var(--accent);
+  padding: 4px 0 4px 14px;
+}
+
+.dish-detail-chef-note p {
+  font-size: 0.84rem;
+  font-style: italic;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.dish-detail-ingredients-text {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+
+/* ── Allergens ── */
+
+.dish-detail-allergen-warning {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--badge-bg);
+  border-radius: 10px;
+  padding: 10px 14px;
+  margin-bottom: 14px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--badge-text);
+}
+
+.dish-detail-allergen-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.dish-detail-allergen-chip {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text);
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 6px 12px 6px 6px;
+}
+
+.dish-detail-allergen-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.dish-detail-no-allergens {
+  font-size: 0.84rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.dish-detail-scroll-spacer { height: 96px; }
+
+/* ── Persistent CTA bar (always reachable, independent of sheet position) ── */
+
+.dish-detail-cta-bar {
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  width: 100%;
+  max-width: 480px;
+  transform: translateX(-50%);
+  background: var(--card-bg);
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -4px 16px rgba(0,0,0,0.1);
+  padding: 12px 20px calc(12px + env(safe-area-inset-bottom));
+  z-index: 4;
+}
+
+.dish-detail-ar-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 14px;
+  background: var(--ar-btn);
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border: none;
+  border-radius: 12px;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.12s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.dish-detail-ar-btn:active {
+  background: var(--ar-btn-dark);
+  transform: scale(0.98);
+}
+
+.dish-detail-ar-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.dish-detail-ar-unsupported {
+  text-align: center;
+  font-size: 0.72rem;
+  color: var(--accent-dark);
+  margin-top: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dish-detail-ar-btn { transition: none; }
+  .dish-detail-ar-btn:active { transform: none; }
+}
+
+/* ── Simple layout: no photo, no 3D model ──
+   A plain scrolling page instead of the fixed-hero/draggable-sheet treatment,
+   which only makes sense when there's real visual content to peek behind. */
+
+.dish-detail-simple {
+  min-height: 100dvh;
+  background: var(--bg);
+}
+
+.dish-detail-simple-banner {
+  position: relative;
+  height: 140px;
+  padding: max(16px, env(safe-area-inset-top)) 16px 0;
+}
+
+.dish-detail-simple-banner .dish-detail-back {
+  position: absolute;
+  top: max(16px, env(safe-area-inset-top));
+  left: 16px;
+}
+
+.dish-detail-badge--inline {
+  position: absolute;
+  top: max(16px, env(safe-area-inset-top));
+  right: 16px;
+}
+
+.dish-detail-simple-body {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 20px 20px 40px;
+}
+
+.dish-detail-simple-scroll {
+  margin-top: 14px;
+  padding-top: 4px;
+  border-top: 1px solid var(--border);
+}
+
+.dish-detail-ar-hint {
+  text-align: center;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 8px;
+}

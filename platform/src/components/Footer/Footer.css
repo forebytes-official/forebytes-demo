@@ -1,0 +1,22 @@
+.footer {
+  text-align: center;
+  padding: 28px 20px 40px;
+  border-top: 1px solid var(--border);
+}
+
+.footer-powered {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.footer-powered strong { color: var(--ar-btn); font-weight: 600; }
+
+.footer-note {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin-top: 8px;
+  line-height: 1.5;
+}
