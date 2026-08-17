@@ -3,11 +3,14 @@ import { Link } from 'react-router-dom';
 import { ViewerHeader } from '../Header';
 import './ARViewer.css';
 
-const POSTER_SVG = `
-  <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
-    <path d="M12 2L3 7v10l9 5 9-5V7L12 2z" stroke="#0EA5E9" stroke-width="1.5" stroke-linejoin="round"/>
-    <path d="M12 2v15M3 7l9 5 9-5"         stroke="#0EA5E9" stroke-width="1.5" stroke-linejoin="round"/>
-  </svg>
+const POSTER_HTML = `
+  <div class="poster-content">
+    <svg class="poster-cube" width="48" height="48" viewBox="0 0 24 24" fill="none">
+      <path d="M12 2L3 7v10l9 5 9-5V7L12 2z" stroke="#0EA5E9" stroke-width="1.5" stroke-linejoin="round"/>
+      <path d="M12 2v15M3 7l9 5 9-5"         stroke="#0EA5E9" stroke-width="1.5" stroke-linejoin="round"/>
+    </svg>
+    <p class="poster-text">Preparing 3D model…</p>
+  </div>
 `;
 
 export default function ARViewer({ dish }) {
@@ -39,13 +42,13 @@ export default function ARViewer({ dish }) {
     mv.setAttribute('rotation-per-second','20deg');
     mv.setAttribute('shadow-intensity',   '1');
     mv.setAttribute('exposure',           '1');
-    mv.setAttribute('scale',              dish.scale ?? '1 1 1');
+    if (dish.scale) mv.setAttribute('scale', dish.scale);
     mv.className = 'model-viewer-el';
 
     const poster = document.createElement('div');
     poster.slot      = 'poster';
     poster.className = 'poster-slot';
-    poster.innerHTML = POSTER_SVG;
+    poster.innerHTML = POSTER_HTML;
     mv.appendChild(poster);
 
     mv.addEventListener('error', () => setHasError(true));
@@ -66,10 +69,12 @@ export default function ARViewer({ dish }) {
     }
   };
 
+  const backTo = dish ? `/dish/${dish.key}` : '/menu';
+
   if (hasError) {
     return (
       <div className="viewer-page viewer-page--dark">
-        <ViewerHeader dishName="" />
+        <ViewerHeader dishName="" backTo={backTo} />
         <div className="error-screen">
           <svg width="52" height="52" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path d="M12 2L3 7v10l9 5 9-5V7L12 2z" stroke="#C8860A" strokeWidth="1.5" strokeLinejoin="round"/>
@@ -77,7 +82,7 @@ export default function ARViewer({ dish }) {
           </svg>
           <h2>Model not ready yet</h2>
           <p>The 3D model for this dish is still being prepared. Check back soon!</p>
-          <Link to="/menu">← Back to menu</Link>
+          <Link to={backTo}>← {dish ? 'Back to dish' : 'Back to menu'}</Link>
         </div>
       </div>
     );
@@ -85,7 +90,7 @@ export default function ARViewer({ dish }) {
 
   return (
     <div className="viewer-page viewer-page--dark">
-      <ViewerHeader dishName={dish?.name ?? ''} />
+      <ViewerHeader dishName={dish?.name ?? ''} backTo={backTo} />
       <div ref={containerRef} className="viewer-container" />
       <div className="controls">
         <p className="controls-dish-name">{dish?.name}</p>

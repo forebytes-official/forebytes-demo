@@ -1,6 +1,6 @@
 {
-  "name": "forebytes-demo",
-  "version": "1.0.0",
+  "name": "forebytes-platform",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "vite",

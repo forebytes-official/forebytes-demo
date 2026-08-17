@@ -1,7 +1,8 @@
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import './DishCard.css';
 
-const CubeIcon = ({ size = 10, stroke = '#fff', strokeWidth = 2 }) => (
+const CubeIcon = ({ size = 8, stroke = '#fff', strokeWidth = 2 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
     <path d="M12 2L3 7v10l9 5 9-5V7L12 2z" stroke={stroke} strokeWidth={strokeWidth} strokeLinejoin="round"/>
     <path d="M12 2v15M3 7l9 5 9-5"         stroke={stroke} strokeWidth={strokeWidth} strokeLinejoin="round"/>
@@ -9,8 +10,25 @@ const CubeIcon = ({ size = 10, stroke = '#fff', strokeWidth = 2 }) => (
 );
 
 export default function DishCard({ dish }) {
+  const cardRef = useRef(null);
+  const [inView, setInView] = useState(false);
+  const [imgLoaded, setImgLoaded] = useState(false);
+
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) { setInView(true); observer.disconnect(); }
+      },
+      { threshold: 0.15 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <article className="dish-card">
+    <Link ref={cardRef} to={`/dish/${dish.key}`} className={`dish-card ${inView ? 'in-view' : ''}`}>
       <div className="dish-image">
         <div
           className="dish-image-bg"
@@ -19,34 +37,29 @@ export default function DishCard({ dish }) {
         >
           {dish.placeholder.emoji}
         </div>
-        <img
-          src={dish.image}
-          alt={dish.name}
-          loading="lazy"
-          onError={e => { e.currentTarget.style.display = 'none'; }}
-        />
-        <div className="ar-badge" aria-label="AR available">
-          <CubeIcon />
-          AR
-        </div>
+        {dish.image && (
+          <img
+            src={dish.image}
+            alt={dish.name}
+            loading="lazy"
+            className={imgLoaded ? 'loaded' : ''}
+            onLoad={() => setImgLoaded(true)}
+            onError={e => { e.currentTarget.style.display = 'none'; }}
+          />
+        )}
+        {dish.model && (
+          <span className="ar-badge glow-pulse" aria-label="AR available">
+            <CubeIcon />
+            AR
+          </span>
+        )}
+        {dish.badge && <span className="dish-card-badge">{dish.badge}</span>}
       </div>
 
       <div className="dish-body">
-        <div className="dish-meta">
-          <h3 className="dish-name">{dish.name}</h3>
-          <span className="dish-price">{dish.price}</span>
-        </div>
-        <p className="dish-desc">{dish.description}</p>
-        <div className="dish-tags" aria-label="Dish attributes">
-          {dish.tags.map(tag => (
-            <span key={tag} className="tag">{tag}</span>
-          ))}
-        </div>
-        <Link to={`/view/${dish.key}`} className="btn-visualise">
-          <CubeIcon size={18} />
-          Visualise in AR
-        </Link>
+        <p className="dish-name">{dish.name}</p>
+        <span className="dish-price">{dish.price}</span>
       </div>
-    </article>
+    </Link>
   );
 }

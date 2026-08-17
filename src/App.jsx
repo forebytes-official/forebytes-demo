@@ -1,13 +1,9 @@
 import { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useRestaurant } from './hooks/useRestaurant';
 import MenuPage from './pages/MenuPage';
+import DishDetailPage from './pages/DishDetailPage';
 import ViewerPage from './pages/ViewerPage';
-
-function RootRedirect() {
-  const { search } = useLocation();
-  return <Navigate to={`/menu${search}`} replace />;
-}
 
 export default function App() {
   const restaurant = useRestaurant();
@@ -25,10 +21,11 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/"              element={<RootRedirect />} />
-        <Route path="/menu"          element={<MenuPage restaurant={restaurant} />} />
+        <Route path="/"             element={<Navigate to="/menu" replace />} />
+        <Route path="/menu"         element={<MenuPage restaurant={restaurant} />} />
+        <Route path="/dish/:dishKey" element={<DishDetailPage restaurant={restaurant} />} />
         <Route path="/view/:dishKey" element={<ViewerPage restaurant={restaurant} />} />
-        <Route path="*"              element={<RootRedirect />} />
+        <Route path="*"             element={<Navigate to="/menu" replace />} />
       </Routes>
     </BrowserRouter>
   );

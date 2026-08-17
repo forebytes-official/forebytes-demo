@@ -1,5 +1,5 @@
 import anusKitchen from './anus-kitchen';
-import aperitivoatthecafe  from './aperitivo';
+import aperitivoatthecafe from './aperitivo';
 
 /*
   To add a new restaurant:
@@ -9,9 +9,9 @@ import aperitivoatthecafe  from './aperitivo';
 */
 
 const restaurants = {
-  anuskitchen: anusKitchen,
+  anuskitchen:          anusKitchen,
   aperitivioatthecafe:  aperitivoatthecafe,
-  localhost:   anusKitchen,   // change this to whichever you're currently testing
+  localhost:            anusKitchen,
 };
 
 export default restaurants;
